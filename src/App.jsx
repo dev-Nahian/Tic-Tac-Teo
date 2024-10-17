@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // game
 // board
 // squre
@@ -13,7 +14,7 @@ function Squre({value,onSqureClick}) {
 
 
   return (
-    <button onClick={onSqureClick} className="m-1 text-blue h-[60px] w-[60px] rounded-lg text-[28px] font-bold shadow-custom">
+    <button onClick={onSqureClick} className="m-1 text-blue h-[80px] w-[80px] rounded-lg text-[32px] font-bold shadow-custom">
       {value}
     </button>
   );
@@ -27,18 +28,42 @@ function Squre({value,onSqureClick}) {
 export default function Board() {
 
   const [squre, setSqure] = useState(Array(9).fill(null))
+  const [isXnext, setIsXnext] = useState(true)
+
+
+  let Winner = calculateWinner(squre)
+
+  let status;
+
+  if(Winner){
+    status = `Winner is ${Winner}`
+  }else{
+    status = "Next Plyer -" + (isXnext ? "X" : "O" )
+  }
+
 
 
   let handleClick = (i)=> {
 
+    if(squre[i] || calculateWinner(squre)){
+      return;
+    }
     let nextSqure = squre.slice()
-    nextSqure[i] = "X"
+    status
+    if(isXnext){
+      nextSqure[i] = "X"
+    }else{
+      nextSqure[i] = "O"
+    }
+
     setSqure(nextSqure)
+    setIsXnext(!isXnext)
 
   }
 
   return (
     <>
+    <div className="m-4"><h1 className="text-white text-[52px]">{status}</h1></div>
       <div className="flex">
         <Squre value={squre[0]} onSqureClick={() => handleClick(0)}/>
         <Squre value={squre[1]} onSqureClick={() => handleClick(1)}/>
@@ -58,4 +83,29 @@ export default function Board() {
       </div>
     </>
   );
+}
+
+
+
+
+
+// calculation of winner
+function calculateWinner(squares) {
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
